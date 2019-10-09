@@ -7,6 +7,6 @@ steps:
   args: ['push', 'gcr.io/ricks-sandbox/mysite']
 # Deploy image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['beta', 'run', 'deploy', 'PublicSite', '--image', 'gcr.io/ricks-sandbox/mysite', '--region', 'us-west1', '--platform', 'managed', '--allow-unauthenticated']
+  args: ['beta', 'run', 'deploy', 'public-site', '--image', 'gcr.io/ricks-sandbox/mysite', '--region', 'us-west1', '--platform', 'managed', '--allow-unauthenticated']
 images:
 - gcr.io/ricks-sandbox/mysite
