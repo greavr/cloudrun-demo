@@ -20,6 +20,21 @@ Cloud Run or GKE
   Where:
   *[PROJECT_NAME]* is the name of your GCP project.
 1. Configure the Cloud Build
+  1. We are going to create a blank file at the root of the repository called `cloudbuild.yaml`
+  1. Inside the file we will add the following content:
+  ```steps:
+    # Build the container image
+    - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/[PROJECT_ID]/[IMAGE]', '.']
+    # Push the image to Container Registry
+    - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/[PROJECT_ID]/[IMAGE]']
+    # Deploy image to Cloud Run
+    - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['beta', 'run', 'deploy', '[SERVICE_NAME]', '--image', 'gcr.io/[PROJECT_ID]/[IMAGE]', '--region', '[REGION]', '--platform', 'managed', '--allow-unauthenticated']
+    images:
+    - gcr.io/[PROJECT_ID]/[IMAGE]
+  ```
 1. Push code up
 ```git push google master```
 
@@ -30,7 +45,7 @@ docker build -t mysite .
 ```
 Then we can test the site with:
 ```
-docker run --name test-site -d -p 8080:80 mysite
+docker run --name test-site -d -p 8080:8080 mysite
 ```
 Kill the container with:
 ```
