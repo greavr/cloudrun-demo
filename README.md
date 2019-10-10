@@ -17,26 +17,30 @@ rm -rf .git/
 mkdir Code
 mv * Code/
 ```
-After we have done this we can look in the `Code/` folder at the raw HTML.
+After we have done this we can look in the `Code/` folder at the raw HTML.<br />
 **Feel free to rename and personalize a few things.**
 
 #### Setting up a Cloud Repository and initalizing a local git
 In this step we will create a GCP Cloud Repository and setup a local git repo around the template we downloaded above.
-1. We will create a empty repository called ***cloud_run_demo***
+1. First we enable the Source Repo API<br />
+```gcloud services enable sourcerepo.googleapis.com```
+1. We will create a empty repository called ***cloud_run_demo***<br />
 ```gcloud source repos create cloud_run_demo```
-1. Now will initalize a git repo
+1. Now will initalize a git repo<br />
 ```git init```
-1. Next step we will configure the remote Repositories for what we just built
+1. Next step we will configure the remote Repositories for what we just built<br />
 ```git config credential.helper gcloud.sh```
-1. Next we will add the remote repository
-```git remote add google https://source.developers.google.com/p/[PROJECT_NAME]/r/cloud_run_demo```
-Where:
+1. Next we will add the remote repository<br />
+```git remote add google https://source.developers.google.com/p/[PROJECT_NAME]/r/cloud_run_demo```<br />
+Where:<br />
 **[PROJECT_NAME]** is the name of your GCP project.
 
 ### Deploying to Cloud Run
 In this stage we will enable Cloud Run, and configure the default region going forward.
+1. First we enable the Cloud Run API:<br />
+```gcloud services enable run.googleapis.com```
 1. Setting up Cloud Run
-  1. Now set the Cloud Run region (Using us-west1 here for example but this is flexible)
+  1. Now set the Cloud Run region (Using us-west1 here for example but this is flexible)<br />
   ```gcloud config set run/region us-central1```
 
 #### Build our Dockerfile
@@ -56,34 +60,36 @@ In this stage we will build a sample container which will run our static site.
     * `COPY Code/ /usr/share/nginx/html` - Lets add in our code to the nginx root folder. 
     * `RUN sed -i 's/80\;/8080\;/g' /etc/nginx/conf.d/default.conf` - Cloud Run assumes the pod is accesible on port 8080, by default nginx is set to port 80, this fixes this
     * `EXPOSE 8080` - This lets other users know what port to listen too and ensure the container is open on the port we need
-1. We can test running this image by using the following commands localy: 
+1. We can test running this image by using the following commands localy: <br />
     `docker build -t mysite . && docker run --name test-site -d -p 8080:8080 mysite`
 1. Then we can browse the site using [localhost:8080](http://localhost:8080)
-1. After we are happy the container works we kill the container with: 
+1. After we are happy the container works we kill the container with: <br />
 `docker kill test-site && docker rm test-site`
 
 #### Configure the Cloud Build
 In this stage we are going to build a sample Cloudbuild config file to turn our code into a container and deploy it on Cloud Run.
+1. First we enable the Cloud Build API:<br />
+```gcloud services enable cloudbuild.googleapis.com```
 1. We are going to create a blank file at the root of the repository called `cloudbuild.yaml`
 1. Inside the file we will add the following content:
     ```
     steps:
     # Build the container image
     - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/[PROJECT_ID]/[IMAGE]', '.']
+      args: ['build', '-t', 'gcr.io/[PROJECT_ID]/[IMAGE]', '.']
     # Push the image to Container Registry
     - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/[PROJECT_ID]/[IMAGE]']
+      args: ['push', 'gcr.io/[PROJECT_ID]/[IMAGE]']
     # Deploy image to Cloud Run
     - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['beta', 'run', 'deploy', '[SERVICE_NAME]', '--image', 'gcr.io/[PROJECT_ID]/[IMAGE]', '--region', 'us-central1', '--platform', 'managed', '--allow-unauthenticated']
+      args: ['beta', 'run', 'deploy', '[SERVICE_NAME]', '--image', 'gcr.io/[PROJECT_ID]/[IMAGE]', '--region', 'us-central1', '--platform', 'managed', '--allow-unauthenticated']
     images:
     - gcr.io/[PROJECT_ID]/[IMAGE]
     ```
-    Inside this file we need to replace the following values:
-        * `[PROJECT_ID]` - Your project name
-        * `[IMAGE]` - Name of our container, for this purpose call it `mysite-public`
-        * `[SERVICE_NAME]` - For demo sake we will call this `Public Site`
+    Inside this file we need to replace the following values:<br />
+    * `[PROJECT_ID]` - Your project name<br />
+    * `[IMAGE]` - Name of our container, for this purpose call it `mysite-public`<br />
+    * `[SERVICE_NAME]` - For demo sake we will call this `Public Site`
         
 ### Configure Build
 This stage we tell Cloud Build to listen to our Source Repository, and enabled the Cloud Build Service account to modify Cloud Run.
@@ -116,15 +122,15 @@ Lets double check steps taken so far
 
 What we now need to do is send our code down the pipeline and check it out. To do that all we need to do is push code to the repository and go from there.
 Back on our local machine we are going to run the following command:
-    ```
-    git add -A .
-    git commit -m "Inital commit & Pipeline test"
-    git push google master
-    ```
+```
+git add -A .
+git commit -m "Inital commit & Pipeline test"
+git push google master
+```
 
 We can then check out build status in the console: [console.cloud.google.com/cloud-build/builds](https://console.cloud.google.com/cloud-build/builds)
     
-Finally we can check the status of our Cloud Run Service with: 
+Finally we can check the status of our Cloud Run Service with: <br />
 `gcloud beta run services list --platform managed`
-We can get the specifics about our service with 
+We can get the specifics about our service with <br />
 `gcloud beta run services describe public-site --platform managed`
