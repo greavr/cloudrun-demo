@@ -101,15 +101,15 @@ This creates a trigger which listens for any push to the repo on any branch, and
 ### Checklist
 Lets double check steps taken so far
 
-    [ ] Cloned the template site and removed the existing git config
-    [ ] Moved the template site into a sub folder called `Code`
-    [ ] Personalized a dummy site based on a template
-    [ ] Create a empty Cloud Repository and configured a local repository *but not pushed yet*
-    [ ] Enables Cloud Run service and configured it to default to the us-central1 region
-    [ ] Created a Dockerfile to build a container with our code running on nginx 
-    [ ] Created a Cloud Build yaml file
-    [ ] Configured Cloud Build to monitor the Cloud Repository
-    [ ] Configured the Cloud Build service account permissions to modify Cloud Run
+- [ ]  Cloned the template site and removed the existing git config
+- [ ]  Moved the template site into a sub folder called `Code`
+- [ ]  Personalized a dummy site based on a template
+- [ ]  Create a empty Cloud Repository and configured a local repository *but not pushed yet*
+- [ ]  Enables Cloud Run service and configured it to default to the us-central1 region
+- [ ]  Created a Dockerfile to build a container with our code running on nginx 
+- [ ]  Created a Cloud Build yaml file
+- [ ]  Configured Cloud Build to monitor the Cloud Repository
+- [ ]  Configured the Cloud Build service account permissions to modify Cloud Run
 
 ---
 ### Deploy using pipeline
