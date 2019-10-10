@@ -89,7 +89,7 @@ In this stage we are going to build a sample Cloudbuild config file to turn our 
     Inside this file we need to replace the following values:<br />
     * `[PROJECT_ID]` - Your project name<br />
     * `[IMAGE]` - Name of our container, for this purpose call it `mysite-public`<br />
-    * `[SERVICE_NAME]` - For demo sake we will call this `Public Site`
+    * `[SERVICE_NAME]` - For demo sake we will call this `public-site`
         
 ### Configure Build
 This stage we tell Cloud Build to listen to our Source Repository, and enabled the Cloud Build Service account to modify Cloud Run.
