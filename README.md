@@ -8,7 +8,7 @@
 ---
 ## Setting Up The Environment
 
-#### Download the template site
+### Download the template site
 Here we are going to download the template html site and move it into a sub folder called *Code* and then remove the existing git config to start fresh:
 ```
 git clone https://github.com/greavr/html-template.git
@@ -20,7 +20,7 @@ mv * Code/
 After we have done this we can look in the `Code/` folder at the raw HTML.<br />
 **Feel free to rename and personalize a few things.**
 
-#### Setting up a Cloud Repository and initalizing a local git
+### Setting up a Cloud Repository and initalizing a local git
 In this step we will create a GCP Cloud Repository and setup a local git repo around the template we downloaded above.
 1. First we enable the Source Repo API<br />
 ```gcloud services enable sourcerepo.googleapis.com```
@@ -35,7 +35,7 @@ In this step we will create a GCP Cloud Repository and setup a local git repo ar
 Where:<br />
 **[PROJECT_NAME]** is the name of your GCP project.
 
-### Deploying to Cloud Run
+### Configuring Cloud Run
 In this stage we will enable Cloud Run, and configure the default region going forward.
 1. First we enable the Cloud Run API:<br />
 ```gcloud services enable run.googleapis.com```
@@ -43,7 +43,7 @@ In this stage we will enable Cloud Run, and configure the default region going f
   1. Now set the Cloud Run region (Using us-west1 here for example but this is flexible)<br />
   ```gcloud config set run/region us-central1```
 
-#### Build our Dockerfile
+### Build our Dockerfile
 In this stage we will build a sample container which will run our static site.
 1. Create a blank file called `Dockerfile`
 1. Add the following:
@@ -66,7 +66,7 @@ In this stage we will build a sample container which will run our static site.
 1. After we are happy the container works we kill the container with: <br />
 `docker kill test-site && docker rm test-site`
 
-#### Configure the Cloud Build
+### Configuring Cloud Build
 In this stage we are going to build a sample Cloudbuild config file to turn our code into a container and deploy it on Cloud Run.
 1. First we enable the Cloud Build API:<br />
 ```gcloud services enable cloudbuild.googleapis.com```
@@ -121,7 +121,7 @@ Lets double check steps taken so far
 ### Deploy using pipeline
 
 What we now need to do is send our code down the pipeline and check it out. To do that all we need to do is push code to the repository and go from there.
-Back on our local machine we are going to run the following command:
+Run the following command:
 ```
 git add -A .
 git commit -m "Inital commit & Pipeline test"
