@@ -1,14 +1,27 @@
 # Complete simple guide to CD on Cloud Run with CloudBuild
 
 ## Components in play
-Cloud Repositories
-Cloud Build
-Container Registry
-Cloud Run
-
+* Cloud Repositories
+* Cloud Build
+* Container Registry
+* Cloud Run
+---
 ## Setting Up The Environment
 
+#### Download the template site
+Here we are going to download the template html site and move it into a sub folder called *Code* and then remove the existing git config to start fresh:
+```
+git clone https://github.com/greavr/html-template.git
+cd html-template
+rm -rf .git/
+mkdir Code
+mv * Code/
+```
+After we have done this we can look in the `Code/` folder at the raw HTML.
+**Feel free to rename and personalize a few things.**
+
 #### Setting up a Cloud Repository and initalizing a local git
+In this step we will create a GCP Cloud Repository and setup a local git repo around the template we downloaded above.
 1. We will create a empty repository called ***cloud_run_demo***
 ```gcloud source repos create cloud_run_demo```
 1. Now will initalize a git repo
@@ -20,12 +33,14 @@ Cloud Run
 Where:
 **[PROJECT_NAME]** is the name of your GCP project.
 
-### Deploying to CloudRun
-1. Setting up CloudRun
+### Deploying to Cloud Run
+In this stage we will enable Cloud Run, and configure the default region going forward.
+1. Setting up Cloud Run
   1. Now set the Cloud Run region (Using us-west1 here for example but this is flexible)
   ```gcloud config set run/region us-central1```
 
 #### Build our Dockerfile
+In this stage we will build a sample container which will run our static site.
 1. Create a blank file called `Dockerfile`
 1. Add the following:
       ```
@@ -48,6 +63,7 @@ Where:
 `docker kill test-site && docker rm test-site`
 
 #### Configure the Cloud Build
+In this stage we are going to build a sample Cloudbuild config file to turn our code into a container and deploy it on Cloud Run.
 1. We are going to create a blank file at the root of the repository called `cloudbuild.yaml`
 1. Inside the file we will add the following content:
     ```
@@ -69,35 +85,44 @@ Where:
         * `[IMAGE]` - Name of our container, for this purpose call it `mysite-public`
         * `[SERVICE_NAME]` - For demo sake we will call this `Public Site`
         
-### Configure Build Trigger
+### Configure Build
+This stage we tell Cloud Build to listen to our Source Repository, and enabled the Cloud Build Service account to modify Cloud Run.
 1. This step needs to be configured inside the console sadly
 1. Open the console and goto Cloud Build / Triggers page [console.cloud.google.com/cloud-build/triggers](https://console.cloud.google.com/cloud-build/triggers)
 1. Along the top select **+ CREATE TRIGGER**
 1. Select **cloud_run_demo**
 1. Under ***Build configuration*** select ***Cloud Build configuration file (yaml or json)***
 1. Press **Create trigger**
+1. After this is complete we need to go configure the Cloud Build service account to be able to talk to Cloud Run. To do this inside the Console goto Cloud Build Settings ([console.cloud.google.com/cloud-build/settings](https://console.cloud.google.com/cloud-build/settings))
+    1. Inside here next to ***Cloud Run*** Change the Status to ***ENABLED***
+    1. When prompted for Enabling extended permissions, say **Agree**
 This creates a trigger which listens for any push to the repo on any branch, and then looks for a `cloudbuild.yaml` file in the repository root. It then uses that `cloudbuild.yaml` file to work out what it needs to do next.
- 
+---
+### Checklist
+Lets double check steps taken so far
+    [ ] Cloned the template site and removed the existing git config
+    [ ] Moved the template site into a sub folder called `Code`
+    [ ] Personalized a dummy site based on a template
+    [ ] Create a empty Cloud Repository and configured a local repository *but not pushed yet*
+    [ ] Enables Cloud Run service and configured it to default to the us-central1 region
+    [ ] Created a Dockerfile to build a container with our code running on nginx 
+    [ ] Created a Cloud Build yaml file
+    [ ] Configured Cloud Build to monitor the Cloud Repository
+    [ ] Configured the Cloud Build service account permissions to modify Cloud Run
+---
 ### Deploy using pipeline
 
-So far we have:
-1. Create a empty GCP Source Repository and configured a local repository *but not pushed yet*
-1. Enables Cloud Run service and configured it to default to the us-central1 region
-1. Created a Dockerfile to build a container with our code running on nginx 
-1. Created a Cloud Build yaml file which goes through the following steps:
-    1. Create a container based on our dockerfile
-    1. Push the container to our GCP repository
-    1. Push the container to a Cloud Run service and open it to the world
-    2. 
 What we now need to do is send our code down the pipeline and check it out. To do that all we need to do is push code to the repository and go from there.
 Back on our local machine we are going to run the following command:
-```
-git add -A .
-git commit -m "Inital commit & Pipeline test"
-git push google master
-```
+    ```
+    git add -A .
+    git commit -m "Inital commit & Pipeline test"
+    git push google master
+    ```
 
 We can then check out build status in the console: [console.cloud.google.com/cloud-build/builds](https://console.cloud.google.com/cloud-build/builds)
     
-Finally we can check the status of our Cloud Run Service with: `gcloud beta run services list --platform managed`
-We can get the specifics about our service with `gcloud beta run services describe public-site --platform managed`
+Finally we can check the status of our Cloud Run Service with: 
+`gcloud beta run services list --platform managed`
+We can get the specifics about our service with 
+`gcloud beta run services describe public-site --platform managed`
