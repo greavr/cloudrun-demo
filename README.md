@@ -131,6 +131,6 @@ git push google master
 We can then check out build status in the console: [console.cloud.google.com/cloud-build/builds](https://console.cloud.google.com/cloud-build/builds)
     
 Finally we can check the status of our Cloud Run Service with: <br />
-`gcloud beta run services list --platform managed`
+`gcloud beta run services list --platform managed`<br />
 We can get the specifics about our service with <br />
 `gcloud beta run services describe public-site --platform managed`
